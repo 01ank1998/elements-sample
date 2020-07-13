@@ -24,10 +24,7 @@ export class Module1WrapperComponent implements OnInit, OnDestroy {
   componentFactoryResolver: ComponentFactoryResolver;
   injector: Injector;
 
-  constructor(
-    private lazyLoadModuleService: LazyLoadModuleService,
-    private elementRef: ElementRef
-  ) {}
+  constructor(private lazyLoadModuleService: LazyLoadModuleService) {}
 
   ngOnInit(): void {
     this.lazyLoadModuleService
@@ -40,12 +37,11 @@ export class Module1WrapperComponent implements OnInit, OnDestroy {
         this.injector = this.lazyLoadModuleService.getInjector(
           this.componentToLoad
         );
-        const attributes = this.getElementAttributes();
-        this.createComponent(attributes);
+        this.createComponent();
       });
   }
 
-  createComponent(attributes) {
+  createComponent() {
     this.container.clear();
     const factory = this.componentFactoryResolver.resolveComponentFactory(
       this.componentToLoad
@@ -55,36 +51,6 @@ export class Module1WrapperComponent implements OnInit, OnDestroy {
       0,
       this.injector
     );
-
-    this.setAttributes(attributes);
-    this.listenToAttributeChanges();
-  }
-
-  setAttributes(attributes) {
-    attributes.forEach((attr) => {
-      this.componentRef.instance[attr.name] = attr.value;
-    });
-  }
-
-  getElementAttributes() {
-    const attributes = [];
-
-    return attributes;
-  }
-
-  listenToAttributeChanges() {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes') {
-          const attributes = this.getElementAttributes();
-          this.setAttributes(attributes);
-        }
-      });
-    });
-
-    observer.observe(this.elementRef.nativeElement, {
-      attributes: true,
-    });
   }
 
   ngOnDestroy() {
